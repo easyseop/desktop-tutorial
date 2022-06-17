@@ -1,80 +1,90 @@
-from calendar import c
-from collections import deque 
-from heapq import heappop,heappush
-# grid= ["..FF","###F","###."]
-# k = 4
-grid = [".F.FFFFF.F", ".########.", ".########F", "...######F", "##.######F", "...######F", ".########F", ".########.", ".#...####F", "...#......"]
-k=6
+from collections import deque
+n , m = map(int,input().split())
+
+arr = [list(map(int,input().split()))  for i in range(n)]
+
+dx = [0,-1,-1,-1,0,1,1,1]
+dy = [-1,-1,0,+1,+1,+1,0,-1]
+
+daegaksun_x = [-1,-1,1,1]
+daegaksun_y = [-1,+1,-1,1]
+
+order_list = [list(map(int,input().split())) for i in range(m)]
+
+d = deque(order_list)
+d_groom = deque([[n-1,0] ,[n-1,1],[n-2,0] ,[n-2,1]])
+
+
+visited = [[0]*n for i in range(n)]
 
 
 
-arr = [list(i) for i in grid]
-n = len(grid)
-m = len(arr[0])
+def dir(x,y):
+    if x>=n:
+        x=x%n
+    elif x<0:
+        while x<0:
+            x+=n
+    if y>=n:
+        y=y%n
+    if y<0:
+        while y<0:
+            y+=n
+    return x,y
 
-
-
-dx = [1,-1,0,0]
-dy = [0,0,1,-1]
-
-# d = deque()
-h = [[0,0,0,0]] # cnt,k,x,y
-
-z = 0
-
-
-for i in range(n):
-    for j in range(m):
-        if arr[i][j] == '.':
-            z+=1
-
-answer = 0
-z= z-2
-visited=[[[0]*m for i in range(n)] for i in range(z+1)]
-
-while h:
-
-    cnt,move,x,y = heappop(h)
-    c+=1
-    if [x,y]==[n-1,m-1]:
-        answer = cnt
-        break
-
-    if move==k:
-        continue
     
+# print(two_over)
+
+while d:
+    visited = [[0]*n for i in range(n)]
+    direction,distance  = d.popleft()
+    # print('ddd',direction)
+    move_x,move_y = dx[direction-1],dy[direction-1]
+    no_groom = []
+    # print(d_groom)
+    for i in range(len(d_groom)):
+        x,y = d_groom.popleft()
+
+        x,y = dir(x+move_x*distance,y+move_y*distance)
+
+        arr[x][y] += 1
+   
+        d_groom.append([x,y])
+        visited[x][y] = 1
+
+    while d_groom:
+
+        a,b = d_groom.popleft()
  
-    for i in range(4):
-        a = x+dx[i]
-        b = y+dy[i]
+        water_plus = []
+        cnt= 0 
 
-        if (0<=a<n and 0<=b<m)and not visited[cnt][a][b]:
-            if arr[a][b]=='#':
-                continue
-        
-            if arr[a][b]=='F' and move == k-1: # 숲으로 가면서 이동 가능 거리를 다  소모 할  경우
-                continue
+        for j in range(4):
+            # print(j)
+            new_a = a+daegaksun_x[j]
+            new_b = b+daegaksun_y[j]
+            if 0<=new_a<n and 0<=new_b<n:
+                if arr[new_a][new_b]>=1:
+                    cnt+=1 
+        arr[a][b]+= cnt
+    
+    for p in range(n):
+        for q in range(n):
+            if not visited[p][q] and arr[p][q]>=2:
 
-            if arr[a][b] =='.' or 'F':
-                visited[cnt][a][b] = k
-                heappush(h,[cnt,move+1,a,b])
-            
-            if cnt<z:
-                if arr[a][b] =='.':
-                    visited[cnt+1][a][b] =k
-                    heappush(h,[cnt+1,0,a,b])
+                arr[p][q] -= 2
+                d_groom.append([p,q])
 
+answer = 0    
+for i in range(n):
+    for j in range(n):
+        answer+=arr[i][j]
+print(answer)
 
+    
 
-            
-            
-            
-            
-            
-            
-        
-            
-            
+    
+
     
 
 
