@@ -1,4 +1,1 @@
-import Mecab
-m = MeCab.Tagger()
-te = m.parse('아버지가방에들어가신다')
-print(te)
+print([1,2,3,4,5][::-1])
